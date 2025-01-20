@@ -1,40 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Project Documentation
 
-## Getting Started
+## 1. Setting up Environment Variables
+To get started with the project, you need to configure environment variables.
 
-First, run the development server:
+### Steps to Configure
+1. Locate the `env.example` file in the root of your project.
+2. Copy the file and rename it to `.env`.
+3. Replace the placeholder values with your own credentials:
+   - **DATABASE_URL**: Your PostgreSQL database connection string.
+   - **GOOGLE_CLIENT_ID** and **GOOGLE_CLIENT_SECRET**: Obtain these from the Google Cloud Console.
+   - **GITHUB_CLIENT_ID** and **GITHUB_CLIENT_SECRET**: Obtain these from the GitHub Developer settings.
+   - **NEXTAUTH_SECRET**: A random secret for securing authentication sessions.
+   - **NEXTAUTH_URL**: The base URL of your application (e.g., `http://localhost:3000` for development).
 
+## 2. Functional Pages and Their Descriptions
+
+### a. Home Page (`/`)
+- **Functionality**: Displays a hero section and a list of featured courses.
+- **Notes**: Featured courses are currently static.
+- **Pending Feature**: Make featured courses dynamic by fetching them from the database.
+
+### b. Admin Pages (`/admin`)
+- **Functionality**: Displays analytics for the project.
+- **Notes**: The analytics data is currently static.
+- **Pending Feature**: Make the analytics data dynamic.
+
+#### i. Admin Users Page (`/admin/users`)
+- **Functionality**: Displays a list of all users.
+- **Notes**:
+  - The UI requires updates.
+  - Admins can navigate to the `create` page to add new users.
+
+#### ii. Create User Page (`/admin/users/create`)
+- **Functionality**: Allows admins to create new users.
+
+#### iii. Admin Content Page (`/admin/content`)
+- **Functionality**: Displays all available content (courses) in the project.
+
+#### iv. Create Content Page (`/admin/content/create`)
+- **Functionality**: Allows admins to create new courses that will be displayed to users.
+
+### c. Courses Page (`/courses`)
+- **Functionality**: Displays all available courses to users.
+- **Features**:
+  - Fetches courses dynamically from the database.
+  - Includes a dynamic search functionality.
+
+### d. Course Details Page (`/courses/[id]`)
+- **Functionality**: Displays detailed content of a specific course based on the course ID.
+
+### e. Protected Page (`/protected`)
+- **Functionality**: A sample page to demonstrate authentication-protected content.
+- **Notes**: This functionality will be implemented on pages requiring protection.
+
+## 3. Running the Project
+Follow these steps to set up and run the project:
+
+### Step 1: Install Dependencies
+Run the following command to install all required dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Step 2: Set Up the Database
+1. Ensure that PostgreSQL is installed and running on your system.
+2. Create a database and schema as required (e.g., `lms_2k25` and `lms2k25_schema`).
+3. Update the `DATABASE_URL` in your `.env` file to match your configuration.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Step 3: Run Database Migrations
+Apply database migrations to set up the necessary tables:
+```bash
+npx prisma migrate dev
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+### Step 4: Start the Development Server
+Start the development server:
+```bash
+npm run dev
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+The application will be accessible at `http://localhost:3000`.
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Step 5: Verify Authentication
+Test Google and GitHub authentication by ensuring the respective client IDs and secrets are correctly set up in the `.env` file.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
