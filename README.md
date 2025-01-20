@@ -1,5 +1,7 @@
 # Project Documentation
 
+* Note: the project is under development 
+
 ## 1. Setting up Environment Variables
 To get started with the project, you need to configure environment variables.
 
@@ -16,20 +18,23 @@ To get started with the project, you need to configure environment variables.
 ## 2. Functional Pages and Their Descriptions
 
 ### a. Home Page (`/`)
-- **Functionality**: Displays a hero section and a list of featured courses.
+- **Functionality**: 
+  ✅ Displays a hero section and a list of featured courses.
 - **Notes**: Featured courses are currently static.
-- **Pending Feature**: Make featured courses dynamic by fetching them from the database.
+- **Pending Feature**:  
+  ❌ Make featured courses dynamic by fetching them from the database.
 
 ### b. Admin Pages (`/admin`)
-- **Functionality**: Displays analytics for the project.
+- **Functionality**: ✅ Displays analytics for the project.
 - **Notes**: The analytics data is currently static.
-- **Pending Feature**: Make the analytics data dynamic.
+- **Pending Feature**:
+  ❌ Make the analytics data dynamic.
 
 #### i. Admin Users Page (`/admin/users`)
-- **Functionality**: Displays a list of all users.
+- **Functionality**: ✅ Displays a list of all users.
 - **Notes**:
-  - The UI requires updates.
-  - Admins can navigate to the `create` page to add new users.
+  - [ ] The UI requires updates.\
+✅ Admins can navigate to the `create` page to add new users.
 
 #### ii. Create User Page (`/admin/users/create`)
 - **Functionality**: Allows admins to create new users.
