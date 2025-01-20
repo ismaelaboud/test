@@ -13,55 +13,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
-
-const allCourses = [
-  {
-    id: "1",
-    title: "Web Development Fundamentals",
-    description: "Learn the basics of web development with HTML, CSS, and JavaScript",
-    image: "https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?w=800&auto=format&fit=crop&q=60",
-    instructor: "John Doe",
-    category: "Programming"
-  },
-  {
-    id: "2",
-    title: "Data Science Essentials",
-    description: "Master the fundamentals of data science and analytics",
-    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=60",
-    instructor: "Jane Smith",
-    category: "Data Science"
-  },
-  {
-    id: "3",
-    title: "Digital Marketing Masterclass",
-    description: "Complete guide to modern digital marketing strategies",
-    image: "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=800&auto=format&fit=crop&q=60",
-    instructor: "Mike Johnson",
-    category: "Marketing"
-  },
-  {
-    id: "4",
-    title: "UI/UX Design Principles",
-    description: "Learn modern design principles and create stunning user interfaces",
-    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&auto=format&fit=crop&q=60",
-    instructor: "Sarah Wilson",
-    category: "Design"
-  },
-];
+import { useEffect, useState } from "react";
 
 const categories = ["All", "Programming", "Data Science", "Marketing", "Design"];
 
 export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [courses, setCourses] = useState([]);
 
-  const filteredCourses = allCourses.filter((course) => {
-    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || course.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    async function fetchCourses() {
+      try {
+        const response = await fetch(
+          `/api/courses?searchQuery=${encodeURIComponent(searchQuery)}&category=${encodeURIComponent(selectedCategory)}`
+        );
+        const data = await response.json();
+
+        // Map thumbnailUrl to image for CourseCard
+        const formattedData = data.map((course) => ({
+          ...course,
+          image: course.thumbnailUrl, 
+        }));
+
+        setCourses(formattedData);
+      } catch (error) {
+        console.error("Failed to fetch courses", error);
+      }
+    }
+    fetchCourses();
+  }, [searchQuery, selectedCategory]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -126,7 +107,7 @@ export default function CoursesPage() {
           </div>
           <div className="flex-1">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCourses.map((course) => (
+              {courses.map((course) => (
                 <CourseCard key={course.id} {...course} />
               ))}
             </div>

@@ -12,7 +12,7 @@ model User {
   name           String
   email          String    @unique
   password       String
-  role           Role      @default(STUDENT)
+  role           Role      @default(student)
   emailVerified  DateTime?
   image          String?
   accounts       Account[]
@@ -24,8 +24,8 @@ model User {
 }
 
 enum Role {
-  STUDENT
-  INSTRUCTOR
+  student
+  instructor
 }
 
 model Account {
@@ -53,3 +53,48 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expires      DateTime
 }
+
+model Course {
+  id                String   @id @default(uuid())
+  title             String
+  description       String
+  thumbnailUrl      String?
+  learningObjectives String
+  prerequisites     String?
+  level             String
+  createdAt         DateTime @default(now())
+  modules           Module[]
+}
+
+model Module {
+  id          String   @id @default(uuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  duration    String
+  prerequisites String?
+  content     String
+  exercises   Exercise[]
+  resources   Resource[]
+}
+
+model Exercise {
+  id              String   @id @default(uuid())
+  moduleId        String
+  module          Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title           String
+  instructions    String
+  expectedOutcome String
+  assessmentCriteria String?
+}
+
+model Resource {
+  id    String   @id @default(uuid())
+  moduleId String
+  module  Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title  String
+  type   String
+  url    String
+}
+

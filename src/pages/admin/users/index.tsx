@@ -105,7 +105,7 @@ export default function UsersListPage() {
                   {users.map((user) => (
                     <tr key={user.id}>
                       <td className="border border-gray-200 px-4 py-2">
-                        {user.name}  // Changed from fullName to name
+                        {user.name} 
                       </td>
                       <td className="border border-gray-200 px-4 py-2">
                         {user.email}

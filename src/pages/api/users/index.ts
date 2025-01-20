@@ -18,13 +18,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await prisma.user.create({
         data: {
-          name: fullName,  // Use fullName here
+          name: fullName, 
           email,
           password: hashedPassword,
           status,
           phoneNumber,
           department,
-          role: userType,  // Ensure role is being set
+          role: userType.toLowerCase(),  // Ensure role is being set
         },
       });
       res.status(201).json({ message: 'User created successfully', user: newUser });
