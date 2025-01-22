@@ -6,13 +6,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Loader2, Search, MoreHorizontal, UserPlus } from "lucide-react";
 import AdminLayout from "../layout";
+import { useToast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
-  name: string;  // Changed from fullName to name
+  name: string;
   email: string;
   role: string;
   status: boolean;
@@ -21,6 +31,7 @@ interface User {
 
 export default function UsersListPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -55,13 +66,22 @@ export default function UsersListPage() {
     fetchUsers();
   }, [toast]);
 
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold tracking-tight">Users List</h2>
-          <Button onClick={() => window.location.assign("/admin/users/create")}>
-            Add User
+          <Button asChild>
+            <a href="/admin/users/create" className="flex items-center">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Add User
+            </a>
           </Button>
         </div>
 
@@ -70,63 +90,80 @@ export default function UsersListPage() {
             <CardTitle>All Users</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8"
+                />
+              </div>
+            </div>
+
             {isLoading ? (
               <div className="flex justify-center items-center py-10">
                 <Loader2 className="animate-spin h-8 w-8 text-gray-500" />
               </div>
             ) : error ? (
               <div className="text-center text-red-500 py-10">{error}</div>
-            ) : users.length === 0 ? (
-              <div className="text-center text-gray-500 py-10">
-                No users found.
-              </div>
+            ) : filteredUsers.length === 0 ? (
+              <div className="text-center text-gray-500 py-10">No users found.</div>
             ) : (
-              <table className="min-w-full table-auto border-collapse border border-gray-200">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-gray-200 px-4 py-2 text-left">
-                      Full Name
-                    </th>
-                    <th className="border border-gray-200 px-4 py-2 text-left">
-                      Email
-                    </th>
-                    <th className="border border-gray-200 px-4 py-2 text-left">
-                      Role
-                    </th>
-                    <th className="border border-gray-200 px-4 py-2 text-center">
-                      Status
-                    </th>
-                    <th className="border border-gray-200 px-4 py-2 text-center">
-                      Created At
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((user) => (
-                    <tr key={user.id}>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {user.name} 
-                      </td>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {user.email}
-                      </td>
-                      <td className="border border-gray-200 px-4 py-2">
-                        {user.role}
-                      </td>
-                      <td
-                        className={`border border-gray-200 px-4 py-2 text-center ${
-                          user.status ? "text-green-500" : "text-red-500"
-                        }`}
-                      >
-                        {user.status ? "Active" : "Inactive"}
-                      </td>
-                      <td className="border border-gray-200 px-4 py-2 text-center">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Created At</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user.id}>
+                        <TableCell>{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>{user.role}</TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                              user.status
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {user.status ? "Active" : "Inactive"}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          {new Date(user.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>View Activity</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600">
+                                Deactivate
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             )}
           </CardContent>
         </Card>

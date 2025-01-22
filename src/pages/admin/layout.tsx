@@ -1,6 +1,5 @@
 "use client";
 
-import { MainNav } from "@/components/main-nav";
 import UserProfile from "@/components/user-profile";
 import { cn } from "@/lib/utils";
 import { useState } from "react";

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -26,7 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
-import { Search, Plus, Image, FileText, Video } from "lucide-react";
+import { Search, Plus, Edit, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import AdminLayout from "../layout";
 
 const contentTypes = ["All", "Course", "Article", "Video", "Resource"];
@@ -36,30 +36,40 @@ export default function ContentPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("All");
   const [totalCourses, setTotalCourses] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchContent() {
       try {
-        const response = await fetch("/api/courses", {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch content.");
-        }
-
+        const response = await fetch("/api/courses", { method: "GET" });
+        if (!response.ok) throw new Error("Failed to fetch content.");
         const data = await response.json();
-
-        // Update content and statistics
         setContent(data);
         setTotalCourses(data.length);
       } catch (error) {
         console.error(error);
       }
     }
-
     fetchContent();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/courses?id=${id}`, { method: "DELETE" });
+      if (response.ok) {
+        setContent(content.filter((item) => item.id !== id));
+        setTotalCourses(totalCourses - 1);
+      } else {
+        throw new Error("Failed to delete the course.");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleEdit = (id) => {
+    router.push(`/admin/content/create?id=${id}`);
+  };
 
   const filteredContent = content.filter(
     (item) =>
@@ -88,28 +98,9 @@ export default function ContentPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Courses</CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalCourses}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Media Files</CardTitle>
-              <Image className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">156</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Video Content</CardTitle>
-              <Video className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">32</div>
             </CardContent>
           </Card>
         </div>
@@ -149,9 +140,7 @@ export default function ContentPage() {
                   <TableRow>
                     <TableHead>Title</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Author</TableHead>
-                    <TableHead>Last Modified</TableHead>
+                    <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -160,19 +149,15 @@ export default function ContentPage() {
                       <TableCell className="font-medium">{item.title}</TableCell>
                       <TableCell>{item.type}</TableCell>
                       <TableCell>
-                        <span
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-                            item.status === "Published"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          )}
-                        >
-                          {item.status}
-                        </span>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" onClick={() => handleEdit(item.id)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" onClick={() => handleDelete(item.id)}>
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </TableCell>
-                      <TableCell>{item.author}</TableCell>
-                      <TableCell>{item.lastModified}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

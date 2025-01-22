@@ -47,7 +47,7 @@ export function CourseCard({
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}
         </p>
-        <p className="text-sm mt-2">Instructor: {instructor}</p>
+        {/* <p className="text-sm mt-2">Instructor: {instructor}</p> */}
       </CardContent>
       <CardFooter>
         <Button asChild className="w-full">
