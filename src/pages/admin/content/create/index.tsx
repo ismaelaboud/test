@@ -1,5 +1,9 @@
 "use client";
-
+import dynamic from "next/dynamic";
+const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import "react-quill/dist/quill.snow.css";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -85,6 +89,34 @@ const defaultValues: Partial<CourseFormValues> = {
     resources: [],
   }],
 };
+
+hljs.configure({
+  languages: ["javascript", "python", "html", "css"], // Add the languages you need
+});
+
+// Quill modules for toolbar and syntax
+const modules = {
+  syntax: { highlight: (text) => hljs.highlightAuto(text).value }, // Enable syntax highlighting
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["code-block", "link"], // Add the code block button
+  ],
+};
+
+// Quill formats (include code block)
+const formats = [
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "list",
+  "bullet",
+  "code-block",
+  "link",
+];
 
 export default function CreateCoursePage() {
   const { toast } = useToast();
@@ -423,10 +455,14 @@ export default function CreateCoursePage() {
                               <FormItem>
                                 <FormLabel>Module Content</FormLabel>
                                 <FormControl>
-                                  <Textarea
-                                    placeholder="Enter module content"
-                                    className="min-h-[200px]"
-                                    {...field}
+                                  <ReactQuill
+                                    theme="snow"
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    modules={modules}
+                                    formats={formats}
+                                    placeholder="Write or format module content here..."
+                                    className="h-[200px]" // Optional styling
                                   />
                                 </FormControl>
                                 <FormMessage />
