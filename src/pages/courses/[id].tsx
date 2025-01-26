@@ -87,7 +87,10 @@ export default function CourseDetail({ course: initialCourse }) {
               </CardHeader>
               {activeModuleId === module.id && (
                 <CardContent className="p-4">
-                  <p className="text-gray-700 mb-4">{module.content}</p> {/* Display content */}
+                  <div
+                    className="prose prose-slate" 
+                    dangerouslySetInnerHTML={{ __html: module.content }}
+                  /> 
 
                   {/* Exercises */}
                   {module.exercises && module.exercises.length > 0 && (
